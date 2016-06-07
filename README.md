@@ -1,5 +1,7 @@
 # @ngrx/notify
 ### Web Notifications Powered by RxJS for Angular 2
+
+[![Join the chat at https://gitter.im/ngrx/notify](https://badges.gitter.im/ngrx/notify.svg)](https://gitter.im/ngrx/notify?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Join the chat at https://gitter.im/ngrx/notify](https://badges.gitter.im/ngrx/notify.svg)](https://gitter.im/ngrx/notify?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Easily create and handle desktop notifications in Angular 2
