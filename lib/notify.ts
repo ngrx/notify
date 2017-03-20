@@ -1,8 +1,8 @@
-import 'rxjs/add/operator/cache';
+import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
-import { Observable } from 'rxjs/Observable';
-import { Subscriber } from 'rxjs/Subscriber';
+import { Observable } from 'rxjs/Rx';
+import { Subscriber } from 'rxjs/Rx';
 
 import { NotificationStatic, NotificationOptions, NotificationInstance } from './notification';
 
@@ -15,7 +15,7 @@ export class Notify {
     private globalOptions: NotificationOptions[],
     permission$: Observable<boolean>
   ) {
-    this._permission$ = permission$.cache();
+    this._permission$ = permission$.share();
   }
 
   requestPermission(): Observable<boolean> {
