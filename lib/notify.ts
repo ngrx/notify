@@ -1,21 +1,19 @@
-import 'rxjs/add/operator/cache';
-import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/share';
 import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
-
 import { NotificationStatic, NotificationOptions, NotificationInstance } from './notification';
-
 
 export class Notify {
   private _permission$: Observable<boolean>;
 
   constructor(
     private notificationConstructor: NotificationStatic,
-    private globalOptions: NotificationOptions[],
+    private globalOptions: NotificationOptions,
     permission$: Observable<boolean>
   ) {
-    this._permission$ = permission$.cache();
+    this._permission$ = permission$.share();
   }
 
   requestPermission(): Observable<boolean> {
@@ -23,7 +21,7 @@ export class Notify {
   }
 
   private _createNotificationObservable(title: string, _options?: NotificationOptions) {
-    const options: NotificationOptions = Object.assign({}, ...this.globalOptions, _options);
+    const options: NotificationOptions = { ...this.globalOptions, ..._options };
 
     return new Observable((subscriber: Subscriber<NotificationInstance>) => {
       const notification = new this.notificationConstructor(title, options);

@@ -1,5 +1,4 @@
 {
-  "version": "1.8.0",
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./release/esm",
@@ -9,12 +8,16 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "moduleResolution": "node",
-    "declaration": true
+    "declaration": true,
+    "lib": ["es2017", "dom"],
+    "types": [
+      "core-js",
+      "node"
+    ]
   },
   "exclude": [
     "node_modules",
     "spec",
-    "typings",
     "release"
   ]
 }

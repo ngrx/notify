@@ -1,19 +1,34 @@
-require('core-js');
-require('zone.js/dist/zone.js');
-require('zone.js/dist/long-stack-trace-zone.js');
-require('zone.js/dist/jasmine-patch.js');
-require('zone.js/dist/async-test.js');
-require('zone.js/dist/fake-async-test.js');
+require('core-js/es6');
+require('core-js/es7/reflect');
+require('core-js/es7/array');
 
-Error.stackTraceLimit = Infinity;
+// Typescript emit helpers polyfill
+require('ts-helpers');
+
+require('zone.js/dist/zone');
+require('zone.js/dist/long-stack-trace-zone');
+require('zone.js/dist/proxy'); // since zone.js 0.6.15
+require('zone.js/dist/sync-test');
+require('zone.js/dist/jasmine-patch'); // put here since zone.js 0.6.14
+require('zone.js/dist/async-test');
+require('zone.js/dist/fake-async-test');
+
+// RxJS
+require('rxjs/Rx');
 
 require('reflect-metadata');
 
-const testContext = require.context('./spec', true, /\.spec\.ts/);
-testContext.keys().forEach(testContext);
+Error.stackTraceLimit = Infinity;
 
 const testing = require('@angular/core/testing');
 const browser = require('@angular/platform-browser-dynamic/testing');
-testing.setBaseTestProviders(
-  browser.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-  browser.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);
+testing.TestBed.initTestEnvironment(
+  browser.BrowserDynamicTestingModule,
+  browser.platformBrowserDynamicTesting()
+);
+
+const testContext = require.context('./spec', true, /\.spec\.ts/);
+function requireAll(requireContext) {
+  return requireContext.keys().map(requireContext);
+}
+const modules = requireAll(testContext);

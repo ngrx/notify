@@ -13,7 +13,7 @@ describe('Notification Permission', function() {
   });
 
   it('should complete with a denied status if the permission type is "denied"', function(done) {
-    const permission: NotificationPermissionStatus = 'denied';
+    const permission = NotificationPermissionStatus.DENIED;
     const notification: any = { permission };
 
     new NotificationPermission(notification).subscribe({
@@ -26,7 +26,7 @@ describe('Notification Permission', function() {
   });
 
   it('should complete with a granted status if the permission type is "granted"', function(done) {
-    const permission: NotificationPermissionStatus = 'granted';
+    const permission = NotificationPermissionStatus.GRANTED;
     const notification: any = { permission };
 
     new NotificationPermission(notification).subscribe({
@@ -39,8 +39,8 @@ describe('Notification Permission', function() {
   });
 
   it('should request permission if the permission type is "default"', function(done) {
-    const permission: NotificationPermissionStatus = 'default';
-    const resolvedPermission: Promise<NotificationPermissionStatus> = Promise.resolve('granted');
+    const permission = NotificationPermissionStatus.DEFAULT;
+    const resolvedPermission: Promise<NotificationPermissionStatus> = Promise.resolve(NotificationPermissionStatus.GRANTED);
     const requestPermission = jasmine.createSpy('requestPermission').and.returnValue(resolvedPermission);
     const notification: any = { permission, requestPermission };
 

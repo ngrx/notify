@@ -1,4 +1,5 @@
 var path = require('path');
+var webpack = require('webpack');
 
 module.exports = function(karma) {
   'use strict';
@@ -18,16 +19,17 @@ module.exports = function(karma) {
       'tests.js': ['coverage', 'webpack', 'sourcemap']
     },
 
-    reporters: ['mocha', 'coverage'],
+    reporters: ['mocha', 'coverage-istanbul'],
 
-    coverageReporter: {
-      dir: 'coverage/',
-      subdir: '.',
-      reporters: [
-        { type: 'text-summary' },
-        { type: 'json' },
-        { type: 'html' }
-      ]
+    coverageIstanbulReporter: {
+      dir: path.join(__dirname, 'coverage'),
+      reports: [
+        'html',
+        'lcovonly',
+        'json',
+        'clover'
+      ],
+      fixWebpackSourcePaths: true
     },
 
     browsers: ['Chrome'],
@@ -41,32 +43,49 @@ module.exports = function(karma) {
 
     webpack: {
       devtool: 'inline-source-map',
+      entry: undefined,
       resolve: {
-        root: __dirname,
-        extensions: ['', '.ts', '.js']
+        extensions: ['.ts', '.js'],
+        modules: [
+          path.join(__dirname),
+          'node_modules'
+        ]
       },
       module: {
-        loaders: [
+        rules: [
           {
             test: /\.ts?$/,
-            exclude: /(node_modules)/,
-            loader: 'ts-loader?target=es5&module=commonjs'
-          }
-        ],
-        postLoaders: [
+            use: [
+              {
+                loader: 'ts-loader?target=es5&module=commonjs'
+              }
+            ]
+          },
           {
-            test: /\.(js|ts)$/, loader: 'istanbul-instrumenter-loader',
+            test: /\.(js|ts)$/,
+            enforce: 'post',
             include: path.resolve(__dirname, 'lib'),
             exclude: [
               /\.(e2e|spec)\.ts$/,
               /node_modules/
+            ],
+            use: [
+              {
+                loader: 'istanbul-instrumenter-loader'
+              }
             ]
           }
         ]
       },
-      ts: {
-        configFileName: './spec/tsconfig.json'
-      }
+      plugins: [
+        new webpack.LoaderOptionsPlugin({
+          options: {
+            ts: {
+              configFileName: './spec/tsconfig.json'
+            }
+          }
+        })
+      ]
     },
 
     webpackServer: {

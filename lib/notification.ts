@@ -1,4 +1,8 @@
-export type NotificationPermissionStatus = 'denied' | 'granted' | 'default';
+export enum NotificationPermissionStatus {
+  DENIED = 'denied',
+  GRANTED = 'granted',
+  DEFAULT = 'default'
+}
 
 export interface NotificationOptions {
   dir?: 'auto' | 'ltr' | 'rtl';

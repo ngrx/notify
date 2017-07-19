@@ -1,3 +1,4 @@
+import { NotificationInstance } from '../lib/notification';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/observable/of';
 import { Observable } from 'rxjs/Observable';
@@ -6,7 +7,7 @@ import { Notify } from '../lib/notify';
 
 describe('Notify', function() {
   it('should alias "requestPermission()" to "NotificationPermission"', function(done) {
-    const notify = new Notify(<any>{}, [], Observable.of(true));
+    const notify = new Notify(<any>{}, {}, Observable.of(true));
 
     notify.requestPermission().subscribe({
       next(permission) {
@@ -19,7 +20,7 @@ describe('Notify', function() {
 
   it('should not create a notification observable if it does not have permission', function(done) {
     const Notification = jasmine.createSpy('Notification');
-    const notify = new Notify(<any>Notification, [], Observable.of(false));
+    const notify = new Notify(<any>Notification, {}, Observable.of(false));
 
     notify.open('test').subscribe({
       error(err) {
@@ -39,7 +40,7 @@ describe('Notify', function() {
       close: () => {}
     });
 
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
     const sub = notify.open('test').subscribe();
 
     expect(Notification).toHaveBeenCalledWith('test', {});
@@ -49,7 +50,7 @@ describe('Notify', function() {
   it('should close the notification when the observable is unsubscribed from', function() {
     const close = jasmine.createSpy('close');
     const Notification = jasmine.createSpy('Notification').and.returnValue({ close });
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
     const sub = notify.open('test').subscribe();
     sub.unsubscribe();
 
@@ -62,10 +63,10 @@ describe('Notify', function() {
         val();
       },
       close: () => {}
-    };
+    }  as NotificationInstance;
 
     const Notification = jasmine.createSpy('Notification').and.returnValue(instance);
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
 
     notify.open('something').take(1).subscribe({
       next(val) {
@@ -85,7 +86,7 @@ describe('Notify', function() {
     };
 
     const Notification = jasmine.createSpy('Notification').and.returnValue(instance);
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
 
     notify.open('something').subscribe({
       error(err) {
@@ -104,7 +105,7 @@ describe('Notify', function() {
     };
 
     const Notification = jasmine.createSpy('Notification').and.returnValue(instance);
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
 
     notify.open('something').subscribe({
       complete: () => {
@@ -125,7 +126,7 @@ describe('Notify', function() {
     };
 
     const Notification = jasmine.createSpy('Notification').and.returnValue(instance);
-    const notify = new Notify(<any>Notification, [], Observable.of(true));
+    const notify = new Notify(<any>Notification, {}, Observable.of(true));
 
     const sub = notify.open('test').subscribe({
       next(val) {

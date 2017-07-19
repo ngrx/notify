@@ -1,45 +1,57 @@
-import { OpaqueToken } from '@angular/core';
+import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 
 import { Notify } from './notify';
 import { NotificationStatic, NotificationOptions } from './notification';
 import { NotificationPermission } from './notification-permission';
 
-declare var Notification: NotificationStatic;
+declare const window: any;
+export declare var Notification: NotificationStatic;
 
-export const NOTIFY_GLOBAL_OPTIONS = new OpaqueToken('[@ngrx/notify] Global Options');
-export const NOTIFICATION_STATIC = new OpaqueToken('[@ngrx/notify] Notification Static Constructor');
+export const NOTIFY_GLOBAL_OPTIONS = new InjectionToken<NotificationOptions>('[@ngrx/notify] Global Options');
+export const NOTIFICATION_STATIC = new InjectionToken<NotificationStatic>('[@ngrx/notify] Notification Static Constructor');
 
+export function createNotification(): NotificationStatic {
+  return window.Notification;
+}
 
-const NOTIFICATION_STATIC_PROVIDER = {
-  provide: NOTIFICATION_STATIC,
-  useValue: Notification
-};
+export function createNotificationPermission(notification: NotificationStatic): NotificationPermission {
+  return new NotificationPermission(notification);
+}
 
-const NOTIFICATION_PERMISSION_PROVIDER = {
-  provide: NotificationPermission,
-  deps: [ NOTIFICATION_STATIC ],
-  useFactory(Notification: NotificationStatic) {
-    return new NotificationPermission(Notification);
+export function createNotify(notification: NotificationStatic, options: NotificationOptions, permission$: NotificationPermission): Notify {
+  return new Notify(notification, options, permission$);
+}
+
+@NgModule({
+})
+export class NotifyModule {
+  static forRoot(options: NotificationOptions = {}): ModuleWithProviders {
+    return {
+      ngModule: NotifyModule,
+      providers: [
+        {
+          provide: NOTIFICATION_STATIC,
+          useFactory: (createNotification)
+        },
+        {
+          provide: NotificationPermission,
+          deps: [NOTIFICATION_STATIC],
+          useFactory: (createNotificationPermission)
+        },
+        {
+          provide: NOTIFY_GLOBAL_OPTIONS,
+          useValue: options
+        },
+        {
+          provide: Notify,
+          deps: [
+            NOTIFICATION_STATIC,
+            NOTIFY_GLOBAL_OPTIONS,
+            NotificationPermission
+          ],
+          useFactory: (createNotify)
+        }
+      ]
+    };
   }
-};
-
-const NOTIFY_PROVIDER = {
-  provide: Notify,
-  deps: [ NOTIFICATION_STATIC, NOTIFY_GLOBAL_OPTIONS, NotificationPermission ],
-  useFactory(Notification: NotificationStatic, options: NotificationOptions[], permission$: NotificationPermission) {
-    return new Notify(Notification, options, permission$);
-  }
-};
-
-const DEFAULT_GLOBAL_OPTIONS_PROVIDER = {
-  provide: NOTIFY_GLOBAL_OPTIONS,
-  multi: true,
-  useValue: {}
-};
-
-export const NOTIFY_PROVIDERS: any[] = [
-  NOTIFICATION_STATIC_PROVIDER,
-  NOTIFICATION_PERMISSION_PROVIDER,
-  NOTIFY_PROVIDER,
-  DEFAULT_GLOBAL_OPTIONS_PROVIDER
-];
+}
